@@ -5,16 +5,16 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "start": "next start"
   },
   "dependencies": {
+    "magic-sdk": "^9.1.0",
+    "moralis": "^2.5.7",
+    "moralis-v1": "^1.11.0",
     "next": "12.3.1",
     "react": "18.2.0",
-    "react-dom": "18.2.0"
-  },
-  "devDependencies": {
-    "eslint": "8.24.0",
-    "eslint-config-next": "12.3.1"
+    "react-dom": "18.2.0",
+    "react-moralis": "^1.4.2",
+    "web3uikit": "^1.0.4"
   }
 }
