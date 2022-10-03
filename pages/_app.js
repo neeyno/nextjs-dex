@@ -2,7 +2,7 @@ import "../styles/globals.css"
 
 import { MoralisProvider } from "react-moralis"
 import { NotificationProvider } from "web3uikit"
-import Header from "../components/Header"
+import Navbar from "../components/Navbar"
 import Head from "next/head"
 
 //import { ApolloProvider, ApolloClient, InMemoryCache } from "@apollo/client"
@@ -24,7 +24,7 @@ function MyApp({ Component, pageProps }) {
                     <link rel="icon" href="/favicon.ico" />
                 </Head>
                 <NotificationProvider>
-                    <Header />
+                    <Navbar />
                     <Component {...pageProps} />
                 </NotificationProvider>
             </MoralisProvider>

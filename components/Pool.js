@@ -2,9 +2,7 @@ import { useEffect, useState } from "react"
 import { useWeb3Contract, useMoralis } from "react-moralis"
 import { ethers } from "ethers"
 
-import styles from "../styles/Update.module.css"
-//import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-//import { faXmark } from "@fortawesome/free-solid-svg-icons"
+import styles from "../styles/Swap.module.css"
 
 export default function Pool({}) {
     // const [addModal, setAddModal] = useState(1||"0")

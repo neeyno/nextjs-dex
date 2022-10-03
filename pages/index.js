@@ -6,15 +6,17 @@ import { useWeb3Contract, useMoralis } from "react-moralis"
 import { useNotification } from "web3uikit"
 import { ethers } from "ethers"
 
-import contractAddresses from "../constants/contractAddresses.json"
-import dexAbi from "../constants/dexAbi.json"
-import tokenAbi from "../constants/tokenAbi.json"
-import { getAmountOut, getAmountIn } from "../constants/getAmount.js"
+import contractAddresses from "../lib/contractAddresses.json"
+import dexAbi from "../lib/dexAbi.json"
+import tokenAbi from "../lib/tokenAbi.json"
+import { getAmountOut, getAmountIn } from "../lib/getAmount.js"
+import { assets } from "../lib/data.js"
 
 export default function Home() {
+    // const [first, second] = getAssets {first: {name: "Ethereum", symbol: "Eth", val: "", contractAddress} , second: {}}
     const [swap, setSwap] = useState({
-        firstVal: "",
-        secondVal: "",
+        first: assets[0],
+        second: assets[1],
         isReversed: false,
     })
 
@@ -35,7 +37,10 @@ export default function Home() {
     const dispacth = useNotification()
 
     async function getValues(event) {
-        const { value, name } = event.target
+        let { value, name } = event.target
+
+        event.preventDefault()
+        value = value === "" ? "0" : value
 
         const dexBalancesParams = {
             abi: dexAbi,
@@ -65,11 +70,12 @@ export default function Home() {
             : ((secondVal = value),
               (firstVal = getAmountIn(value, yReserve, xReserve)))
         console.log(firstVal, secondVal)
+
         setSwap((prevObj) => {
             return {
                 ...prevObj,
-                ["firstVal"]: firstVal,
-                ["secondVal"]: secondVal,
+                first: { ...prevObj.first, value: firstVal },
+                second: { ...prevObj.second, value: secondVal },
             }
         })
     }
@@ -121,27 +127,23 @@ export default function Home() {
         setSwap((prevObj) => {
             return {
                 ...prevObj,
-                ["firstVal"]: prevObj.secondVal,
-                ["secondVal"]: prevObj.firstVal,
-                ["isReversed"]: !prevObj.isReversed,
+                first: prevObj.second,
+                second: prevObj.first,
+                isReversed: !prevObj.isReversed,
             }
         })
 
         console.log("changed")
     }
 
-    useEffect(() => {
-        if (isWeb3Enabled) {
-        }
-    }, [isWeb3Enabled])
-
     return (
-        <div className={styles.container}>
+        <div className="mx-auto">
             <Swap
-                assets={swap}
+                swap={swap}
                 handleChange={getValues}
                 handleBuyClick={handleBuy}
                 handleReverse={reverseSwap}
+                isWeb3Enabled={isWeb3Enabled}
             />
             <p>{chainId}</p>
         </div>
