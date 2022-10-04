@@ -6,7 +6,7 @@ import Pool from "../components/Pool.js"
 
 export default function PoolPage() {
     return (
-        <div className={styles.container}>
+        <div className="mx-auto">
             <Pool />
         </div>
     )

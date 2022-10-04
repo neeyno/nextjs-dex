@@ -4,6 +4,7 @@ import { MoralisProvider } from "react-moralis"
 import { NotificationProvider } from "web3uikit"
 import Navbar from "../components/Navbar"
 import Head from "next/head"
+import Footer from "../components/Footer"
 
 //import { ApolloProvider, ApolloClient, InMemoryCache } from "@apollo/client"
 //const APP_ID = process.env.NEXT_PUBLIC_APP_ID
@@ -26,6 +27,7 @@ function MyApp({ Component, pageProps }) {
                 <NotificationProvider>
                     <Navbar />
                     <Component {...pageProps} />
+                    <Footer />
                 </NotificationProvider>
             </MoralisProvider>
         </>

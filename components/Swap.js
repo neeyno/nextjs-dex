@@ -21,7 +21,7 @@ export default function Swap({
 
     return (
         <div className="w-screen flex items-center justify-center mt-16 px-1">
-            <div className="bg-gray-900 text-gray-100 w-[40rem] rounded-2xl p-4 sm:w-[40rem]">
+            <div className="bg-gray-900 text-gray-100 w-[40rem] rounded-2xl p-2 sm:w-[40rem] sm:p-4">
                 <div className="px-2 flex items-center justify-between font-semibold text-xl ">
                     <div>Swap</div>
                 </div>
@@ -70,7 +70,7 @@ export default function Swap({
                     </div>
                 </div>
                 <button
-                    className="flex bg-blue-700 mt-4 mx-auto rounded-2xl py-2 px-12 text-xl font-semibold cursor-pointer ease-in-out duration-150 hover:bg-blue-600"
+                    className="flex bg-blue-800 mt-4 mx-auto rounded-2xl py-2 px-12 text-xl font-semibold cursor-pointer ease-in-out duration-150 hover:bg-blue-700"
                     onClick={() => {
                         isWeb3Enabled ? handleBuyClick() : setWalletModal(true)
                     }}

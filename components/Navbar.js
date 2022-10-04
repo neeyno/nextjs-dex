@@ -18,7 +18,7 @@ const Navbar = () => {
 
     return (
         <header
-            className={`py-3 px-2 flex justify-between items-center flex-wrap ${
+            className={`max-w-6xl m-auto py-3 px-2 flex justify-between items-center flex-wrap ${
                 styles.header
             } ${menuOpen ? `${styles.open}` : ""}`}
         >

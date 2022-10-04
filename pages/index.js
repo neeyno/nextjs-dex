@@ -145,7 +145,6 @@ export default function Home() {
                 handleReverse={reverseSwap}
                 isWeb3Enabled={isWeb3Enabled}
             />
-            <p>{chainId}</p>
         </div>
     )
 }
