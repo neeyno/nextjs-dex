@@ -1,7 +1,6 @@
 import { WalletModal } from "web3uikit"
 import { useState, useEffect } from "react"
 
-import styles from "../styles/Swap.module.css"
 import { FiRefreshCcw } from "react-icons/fi"
 
 export default function Swap({
@@ -77,7 +76,11 @@ export default function Swap({
                 >
                     {isWeb3Enabled ? "Confirm swap" : "Connect Wallet"}
                 </button>
-                {walletModal ? <WalletModal /> : null}
+
+                <WalletModal
+                    isOpened={walletModal}
+                    setIsOpened={() => setWalletModal(false)}
+                />
             </div>
         </div>
     )

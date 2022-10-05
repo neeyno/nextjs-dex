@@ -1,7 +1,6 @@
 import Swap from "../components/Swap.js"
-import styles from "../styles/Home.module.css"
 
-import { useEffect, useState } from "react"
+import { useState, useEffect } from "react"
 import { useWeb3Contract, useMoralis } from "react-moralis"
 import { useNotification } from "web3uikit"
 import { ethers } from "ethers"
@@ -13,63 +12,39 @@ import { getAmountOut, getAmountIn } from "../lib/getAmount.js"
 import { assets } from "../lib/data.js"
 
 export default function Home() {
-    // const [first, second] = getAssets {first: {name: "Ethereum", symbol: "Eth", val: "", contractAddress} , second: {}}
     const [swap, setSwap] = useState({
-        first: assets[0],
-        second: assets[1],
+        first: assets[0] || "",
+        second: assets[1] || "",
         isReversed: false,
     })
 
+    const { runContractFunction } = useWeb3Contract()
+    const dispacth = useNotification()
     const { isWeb3Enabled, chainId: chainIdHex } = useMoralis()
-    const chainId = parseInt(chainIdHex).toString() || "4"
+    const chainId = parseInt(chainIdHex).toString() || "31337"
 
     const dexAddress =
         chainId in contractAddresses
             ? contractAddresses[chainId]["DEX"][0]
             : null
-
     const tokenAddress =
         chainId in contractAddresses
             ? contractAddresses[chainId]["DEX"][1]
             : null
 
-    const { runContractFunction } = useWeb3Contract()
-    const dispacth = useNotification()
-
-    async function getValues(event) {
+    /* Swap functions */
+    async function setNewValues(event) {
         let { value, name } = event.target
-
-        event.preventDefault()
+        //event.preventDefault()
         value = value === "" ? "0" : value
 
-        const dexBalancesParams = {
-            abi: dexAbi,
-            contractAddress: dexAddress,
-            functionName: "getContractBalances",
-            params: {},
-        }
-        const [ethBalance, tokenBalance] = await runContractFunction({
-            params: dexBalancesParams,
-            onSuccess: () => console.log("success: getContractBalances"),
-            onError: (error) => {
-                console.log(error)
-            },
-        })
-
-        let firstVal, secondVal, xReserve, yReserve
-        if (!swap.isReversed) {
-            xReserve = ethBalance
-            yReserve = tokenBalance
-        } else {
-            xReserve = tokenBalance
-            yReserve = ethBalance
-        }
+        const [xReserve, yReserve] = await getDexBalances(swap.isReversed)
+        let firstVal, secondVal
         name === "firstVal"
             ? ((firstVal = value),
               (secondVal = getAmountOut(value, xReserve, yReserve)))
             : ((secondVal = value),
               (firstVal = getAmountIn(value, yReserve, xReserve)))
-        console.log(firstVal, secondVal)
 
         setSwap((prevObj) => {
             return {
@@ -81,46 +56,40 @@ export default function Home() {
     }
 
     async function handleBuy() {
-        console.log(swap.firstVal, swap.secondVal, swap.isReversed)
+        //await runSwap(swap.first.value, swap.second.value, swap.isReversed)
+        console.log(swap)
+        const isApproved = swap.isReversed
+            ? await approveToken(swap.first.value)
+            : true
+        if (isApproved) {
+            const swapParams = swap.isReversed
+                ? {
+                      abi: dexAbi,
+                      contractAddress: dexAddress,
+                      functionName: "tokenToEth",
+                      //msgValue: ,
+                      params: {
+                          tokenAmount: ethers.utils.parseEther(
+                              swap.first.value
+                          ),
+                      },
+                  }
+                : {
+                      abi: dexAbi,
+                      contractAddress: dexAddress,
+                      functionName: "ethToToken",
+                      msgValue: ethers.utils.parseEther(swap.first.value),
+                      params: {},
+                  }
 
-        const ethToTokenParams = {
-            abi: dexAbi,
-            contractAddress: dexAddress,
-            functionName: "ethToToken",
-            msgValue: ethers.utils.parseEther(swap.firstVal),
-            params: {},
-        }
-        const tokenToEthParams = {
-            abi: dexAbi,
-            contractAddress: dexAddress,
-            functionName: "tokenToEth",
-            //msgValue: ,
-            params: { tokenAmount: ethers.utils.parseEther(swap.firstVal) },
-        }
-        if (swap.isReversed) {
-            const approveTokenTx = await runContractFunction({
-                params: {
-                    abi: tokenAbi,
-                    contractAddress: tokenAddress,
-                    functionName: "approve",
-                    params: {
-                        spender: dexAddress,
-                        amount: ethers.utils.parseEther(swap.firstVal),
-                    },
-                },
-                onSuccess: () => console.log("success: approve"),
+            const buyTx = await runContractFunction({
+                params: swapParams,
+                onSuccess: () => console.log("success: swap"),
                 onError: (error) => {
                     console.log(error)
                 },
             })
         }
-        const buyTx = await runContractFunction({
-            params: swap.isReversed ? tokenToEthParams : ethToTokenParams,
-            onSuccess: () => console.log("success: swap"),
-            onError: (error) => {
-                console.log(error)
-            },
-        })
     }
 
     function reverseSwap() {
@@ -132,15 +101,74 @@ export default function Home() {
                 isReversed: !prevObj.isReversed,
             }
         })
-
         console.log("changed")
     }
+
+    /* Token approve function */
+    async function approveToken(value) {
+        const approveTokenTx = await runContractFunction({
+            params: {
+                abi: tokenAbi,
+                contractAddress: tokenAddress,
+                functionName: "approve",
+                params: {
+                    spender: dexAddress,
+                    amount: ethers.utils.parseEther(value),
+                },
+            },
+            onSuccess: () => {
+                console.log("success: approved")
+                return true
+            },
+            onError: (error) => {
+                console.log(error)
+                return false
+            },
+        })
+    }
+
+    /* View/Pure contract functions */
+    async function getDexBalances(isReversed) {
+        if (!isWeb3Enabled) {
+            return [
+                ethers.utils.parseEther("1"),
+                ethers.utils.parseEther("1000"),
+            ]
+        }
+        const [ethBalance, tokenBalance] = await runContractFunction({
+            params: {
+                abi: dexAbi,
+                contractAddress: dexAddress,
+                functionName: "getContractBalances",
+                params: {},
+            },
+            onSuccess: () => console.log("success: getContractBalances"),
+            onError: (error) => {
+                console.log(error)
+            },
+        })
+
+        if (isReversed) {
+            return [tokenBalance, ethBalance]
+        } else {
+            return [ethBalance, tokenBalance]
+        }
+    }
+
+    useEffect(() => {
+        if (isWeb3Enabled) {
+            const mockEvent = {
+                target: { name: "firstVal", value: swap.first.value },
+            }
+            setNewValues(mockEvent)
+        }
+    }, [isWeb3Enabled, swap.isReversed])
 
     return (
         <div className="mx-auto">
             <Swap
                 swap={swap}
-                handleChange={getValues}
+                handleChange={setNewValues}
                 handleBuyClick={handleBuy}
                 handleReverse={reverseSwap}
                 isWeb3Enabled={isWeb3Enabled}
