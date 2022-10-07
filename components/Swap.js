@@ -10,7 +10,7 @@ export default function Swap({
     handleReverse,
     isWeb3Enabled,
 }) {
-    const [walletModal, setWalletModal] = useState(isWeb3Enabled)
+    const [walletModal, setWalletModal] = useState(false)
 
     useEffect(() => {
         if (isWeb3Enabled) {
@@ -77,6 +77,7 @@ export default function Swap({
                     {isWeb3Enabled ? "Confirm swap" : "Connect Wallet"}
                 </button>
 
+                {/* {walletModal ? <WalletModal /> : null} */}
                 <WalletModal
                     isOpened={walletModal}
                     setIsOpened={() => setWalletModal(false)}

@@ -55,9 +55,7 @@ export default function Home() {
         })
     }
 
-    async function handleBuy() {
-        //await runSwap(swap.first.value, swap.second.value, swap.isReversed)
-        console.log(swap)
+    async function handleSwap() {
         const isApproved = swap.isReversed
             ? await approveToken(swap.first.value)
             : true
@@ -84,12 +82,29 @@ export default function Home() {
 
             const buyTx = await runContractFunction({
                 params: swapParams,
-                onSuccess: () => console.log("success: swap"),
+                onSuccess: handleSwapSuccess,
                 onError: (error) => {
                     console.log(error)
                 },
             })
+        } else {
+            //dispacth({})
         }
+    }
+
+    async function handleSwapSuccess(tx) {
+        const txResponse = await tx.wait(1)
+        console.log(txResponse)
+        const [, input, output, asset] = txResponse.events[2].args
+        const valueSold = ethers.utils.formatUnits(input, 18)
+        const valueBought = ethers.utils.formatUnits(output, 18)
+        dispacth({
+            type: "success",
+            id: "notification",
+            message: `swapped ${valueSold} ${asset} ${valueBought}`,
+            title: "Swap",
+            position: "bottomR",
+        })
     }
 
     function reverseSwap() {
@@ -101,7 +116,6 @@ export default function Home() {
                 isReversed: !prevObj.isReversed,
             }
         })
-        console.log("changed")
     }
 
     /* Token approve function */
@@ -125,6 +139,8 @@ export default function Home() {
                 return false
             },
         })
+        await approveTokenTx.wait(1)
+        return approveTokenTx
     }
 
     /* View/Pure contract functions */
@@ -169,7 +185,7 @@ export default function Home() {
             <Swap
                 swap={swap}
                 handleChange={setNewValues}
-                handleBuyClick={handleBuy}
+                handleBuyClick={handleSwap}
                 handleReverse={reverseSwap}
                 isWeb3Enabled={isWeb3Enabled}
             />

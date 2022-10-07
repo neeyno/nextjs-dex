@@ -10,20 +10,19 @@ import dexAbi from "../lib/dexAbi.json"
 import tokenAbi from "../lib/tokenAbi.json"
 
 export default function PoolPage() {
-    const [poolModal, setPoolModal] = useState(false)
     const [liquidity, setLiquidity] = useState({
         name: "default",
         total: "",
         account: "",
-        new: "",
+        withdraw: "",
+        slider: "0",
+        deposit: "",
     })
 
     const { runContractFunction, isLoading } = useWeb3Contract()
     const dispacth = useNotification()
     const { account, isWeb3Enabled, chainId: chainIdHex } = useMoralis()
     const chainId = parseInt(chainIdHex).toString() || "31337"
-
-    console.log(account, isLoading)
 
     const dexAddress =
         chainId in contractAddresses
@@ -35,6 +34,23 @@ export default function PoolPage() {
             : null
 
     /* Liquidity pool function */
+
+    function setWithdrawInput(event) {
+        let { value } = event.target
+        value = value === "" ? 0 : value
+
+        const withdrawVal = liquidity.account.mul(parseInt(value)).div(100) || 0
+
+        setLiquidity((prevObj) => {
+            return {
+                ...prevObj,
+                withdraw: withdrawVal,
+                slider: value,
+            }
+        })
+    }
+
+    // Deposit
     async function runDeposit() {
         const oneEth = ethers.utils.parseEther("1")
 
@@ -47,8 +63,8 @@ export default function PoolPage() {
     }
     async function handleApproveSuccess(tx) {
         const txResponse = await tx.wait(1)
-        const spenderAddress = txResponse.events[0].args.spender
-        console.log(spenderAddress)
+        //const args = txResponse.events[0].args
+        console.log(txResponse)
         const depositParams = {
             abi: dexAbi,
             contractAddress: dexAddress,
@@ -65,29 +81,30 @@ export default function PoolPage() {
             },
         })
     }
-
     async function handleDepositSuccess(tx) {
         const txResponse = await tx.wait(1)
-        const newTotal = txResponse.events[1].args.liquidityPool
-        const msg = ethers.utils.formatUnits(newTotal.account, 36)
+        const [, ethValue, tokenValue] = txResponse.events[2].args
+        const ethDeposit = ethers.utils.formatUnits(ethValue, 18)
+        const tokenDeposit = ethers.utils.formatUnits(tokenValue, 18)
         dispacth({
             type: "success",
             id: "notification",
-            message: `${msg} Total pool`,
-            title: "Deposit",
+            message: `${ethDeposit} Eth, ${tokenDeposit} tokens`,
+            title: "Deposit!",
             position: "bottomR",
         })
         updateLiquidity()
     }
+
+    // Withdraw
     async function runWithdraw() {
-        //const mockValue = ethers.utils.parseUnits(value, 36)
-        console.log(liquidity.account.toString())
+        const withdrawAmount = ethers.utils.parseUnits("100", 36)
         if (liquidity.account > 0) {
             const withdrawParams = {
                 abi: dexAbi,
                 contractAddress: dexAddress,
                 functionName: "withdraw",
-                params: { liquidityAmount: liquidity.account },
+                params: { liquidityAmount: withdrawAmount },
             }
 
             const withdrawTx = await runContractFunction({
@@ -104,11 +121,14 @@ export default function PoolPage() {
 
     async function handleWithdrawSuccess(tx) {
         const txResponse = await tx.wait(1)
-        const newTotal = txResponse.events[1].args.liquidityPool
+        //const newTotal = txResponse.events[1].args.liquidityPool
+        const [, ethValue, tokenValue] = txResponse.events[1].args
+        const ethWithdrawn = ethers.utils.formatUnits(ethValue, 18)
+        const tokenWithdrawn = ethers.utils.formatUnits(tokenValue, 18)
         dispacth({
             type: "success",
             id: "notification",
-            message: `${newTotal.toString()}`,
+            message: `${ethWithdrawn} Eth, ${tokenWithdrawn}tokens`,
             title: "Withdraw",
             position: "bottomR",
         })
@@ -204,6 +224,7 @@ export default function PoolPage() {
             setLiquidity((prev) => {
                 return { ...prev, account: accountLiquiduty }
             })
+            //setWithdrawInput({ target: { value: "50" } })
         }
     }
 
@@ -213,13 +234,15 @@ export default function PoolPage() {
         }
     }, [isWeb3Enabled, account])
 
-    /* return */
+    /* RETURN */
     return (
         <div className="mx-auto">
             <Pool
                 liquidity={liquidity}
+                isWeb3Enabled={isWeb3Enabled}
                 handleDepositClick={() => runDeposit()}
-                handleWithdrawClick={() => runWithdraw()}
+                handleWithdrawClick={() => setWithdrawalModal(true)} //() => runWithdraw()}
+                handleWithdrawChange={setWithdrawInput}
             />
         </div>
     )

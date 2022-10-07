@@ -22,7 +22,7 @@ const Navbar = () => {
                 styles.header
             } ${menuOpen ? `${styles.open}` : ""}`}
         >
-            <div className="z-50">
+            <div className="z-20">
                 <h2 className="text-2xl text-gray-100 font-bold sm:px-4">
                     <a href="/" title="DEX">
                         DEX
@@ -31,7 +31,7 @@ const Navbar = () => {
             </div>
             <nav>
                 <ul
-                    className={`menu hidden absolute left-0 top-0 m-0 py-20 pt-16 px-4 bg-[#0a0f18] z-40 w-full h-52 sm:w-unset sm:h-auto sm:bg-transparent sm:flex sm:py-0 sm:static sm:left-unset sm:top-unset ${
+                    className={`menu hidden absolute left-0 top-0 m-0 py-20 pt-16 px-4 bg-[#0a0f18] z-10 w-full h-52 sm:w-unset sm:h-auto sm:bg-transparent sm:flex sm:py-0 sm:static sm:left-unset sm:top-unset ${
                         styles.menu
                     } ${menuOpen ? `${styles.open}` : ""}`}
                 >
@@ -69,7 +69,7 @@ const Navbar = () => {
                 </ul>
             </nav>
             <div
-                className={`z-50 flex flex-col justify-center items-center sm:hidden ${
+                className={`z-20 flex flex-col justify-center items-center sm:hidden ${
                     styles.hamburger
                 } ${menuOpen ? `${styles.open}` : ""}`}
                 onClick={() => SetMenuOpen(!menuOpen)}
