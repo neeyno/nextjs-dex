@@ -8,8 +8,10 @@ import { ethers } from "ethers"
 import contractAddresses from "../lib/contractAddresses.json"
 import dexAbi from "../lib/dexAbi.json"
 import tokenAbi from "../lib/tokenAbi.json"
+import { getDepositValue } from "../lib/helper-functions.js"
 
 export default function PoolPage() {
+    const [depositModal, setDepositModal] = useState(false)
     const [liquidity, setLiquidity] = useState({
         name: "default",
         total: "",
@@ -17,6 +19,7 @@ export default function PoolPage() {
         withdraw: "",
         slider: "0",
         deposit: "",
+        token: "",
     })
 
     const { runContractFunction, isLoading } = useWeb3Contract()
@@ -50,26 +53,66 @@ export default function PoolPage() {
         })
     }
 
-    // Deposit
-    async function runDeposit() {
-        const oneEth = ethers.utils.parseEther("1")
+    async function setDepositInput(event) {
+        let { value } = event.target
+        value = value === "" ? "0" : value
 
+        // const depositEthValue = ethers.utils.parseEther(value)
         const [ethBalance, tokenBalance] = await getDexBalances()
         const totalLiquidity = await getTotalLiquidity()
-        const newLiquidity = oneEth.mul(totalLiquidity).div(ethBalance)
-        const tokenAmount = newLiquidity.mul(tokenBalance).div(totalLiquidity)
+        // const newLiquidity = depositEthValue.mul(totalLiquidity).div(ethBalance)
+        // tokenAmount = newLiquidity.mul(tokenBalance).div(totalLiquidity)
+        const [depositEthVal, depositTokenVal] = getDepositValue(
+            value,
+            ethBalance,
+            tokenBalance,
+            totalLiquidity
+        )
 
-        await approveToken(tokenAmount)
+        setLiquidity((prevObj) => {
+            return {
+                ...prevObj,
+                deposit: depositEthVal,
+                token: depositTokenVal,
+            }
+        })
+    }
+
+    // Deposit
+    async function runDeposit() {
+        if (liquidity.token) {
+            await approveToken(liquidity.token)
+        }
+    }
+    /* Token approve function */
+    async function approveToken(value) {
+        const tokenAmount = ethers.utils.parseEther(value)
+        const approveTokenTx = await runContractFunction({
+            params: {
+                abi: tokenAbi,
+                contractAddress: tokenAddress,
+                functionName: "approve",
+                params: {
+                    spender: dexAddress,
+                    amount: tokenAmount,
+                },
+            },
+            onSuccess: handleApproveSuccess,
+            onError: (error) => {
+                console.log(error)
+            },
+        })
     }
     async function handleApproveSuccess(tx) {
         const txResponse = await tx.wait(1)
         //const args = txResponse.events[0].args
         console.log(txResponse)
+        const ethValue = ethers.utils.parseEther(liquidity.deposit)
         const depositParams = {
             abi: dexAbi,
             contractAddress: dexAddress,
             functionName: "deposit",
-            msgValue: ethers.utils.parseEther("1"),
+            msgValue: ethValue,
             params: {},
         }
 
@@ -98,13 +141,13 @@ export default function PoolPage() {
 
     // Withdraw
     async function runWithdraw() {
-        const withdrawAmount = ethers.utils.parseUnits("100", 36)
-        if (liquidity.account > 0) {
+        //const withdrawAmount = ethers.utils.parseUnits("100", 36)
+        if (liquidity.account > 0 && liquidity.account <= liquidity.withdraw) {
             const withdrawParams = {
                 abi: dexAbi,
                 contractAddress: dexAddress,
                 functionName: "withdraw",
-                params: { liquidityAmount: withdrawAmount },
+                params: { liquidityAmount: liquidity.withdraw },
             }
 
             const withdrawTx = await runContractFunction({
@@ -134,26 +177,6 @@ export default function PoolPage() {
         })
 
         updateLiquidity()
-    }
-
-    /* Token approve function */
-    async function approveToken(value) {
-        const approveTokenTx = await runContractFunction({
-            params: {
-                abi: tokenAbi,
-                contractAddress: tokenAddress,
-                functionName: "approve",
-                params: {
-                    spender: dexAddress,
-                    amount: value,
-                },
-            },
-            onSuccess: handleApproveSuccess,
-            onError: (error) => {
-                console.log(error)
-                return false
-            },
-        })
     }
 
     /* View/Pure contract functions */
@@ -219,12 +242,10 @@ export default function PoolPage() {
     async function updateLiquidity() {
         if (account && isWeb3Enabled) {
             const accountLiquiduty = await getAccountLiquidity(account)
-            console.log(accountLiquiduty.toString())
-
             setLiquidity((prev) => {
-                return { ...prev, account: accountLiquiduty }
+                return { ...prev, account: accountLiquiduty, slider: "0" }
             })
-            //setWithdrawInput({ target: { value: "50" } })
+            setDepositModal(false)
         }
     }
 
@@ -241,8 +262,11 @@ export default function PoolPage() {
                 liquidity={liquidity}
                 isWeb3Enabled={isWeb3Enabled}
                 handleDepositClick={() => runDeposit()}
-                handleWithdrawClick={() => setWithdrawalModal(true)} //() => runWithdraw()}
+                handleWithdrawClick={() => runWithdraw()} //() => setWithdrawalModal(true)}
                 handleWithdrawChange={setWithdrawInput}
+                handleDepositChange={setDepositInput}
+                depositModal={depositModal}
+                setDepositModal={setDepositModal}
             />
         </div>
     )

@@ -8,7 +8,7 @@ import { ethers } from "ethers"
 import contractAddresses from "../lib/contractAddresses.json"
 import dexAbi from "../lib/dexAbi.json"
 import tokenAbi from "../lib/tokenAbi.json"
-import { getAmountOut, getAmountIn } from "../lib/getAmount.js"
+import { getAmountOut, getAmountIn } from "../lib/helper-functions.js"
 import { assets } from "../lib/data.js"
 
 export default function Home() {
