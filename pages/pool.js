@@ -105,7 +105,6 @@ export default function PoolPage() {
     }
     async function handleApproveSuccess(tx) {
         const txResponse = await tx.wait(1)
-        //const args = txResponse.events[0].args
         console.log(txResponse)
         const ethValue = ethers.utils.parseEther(liquidity.deposit)
         const depositParams = {
@@ -126,7 +125,8 @@ export default function PoolPage() {
     }
     async function handleDepositSuccess(tx) {
         const txResponse = await tx.wait(1)
-        const [, ethValue, tokenValue] = txResponse.events[2].args
+        const eventsNum = txResponse.events.length - 1
+        const [, ethValue, tokenValue] = txResponse.events[eventsNum].args
         const ethDeposit = ethers.utils.formatUnits(ethValue, 18)
         const tokenDeposit = ethers.utils.formatUnits(tokenValue, 18)
         dispacth({
@@ -164,8 +164,8 @@ export default function PoolPage() {
 
     async function handleWithdrawSuccess(tx) {
         const txResponse = await tx.wait(1)
-        //const newTotal = txResponse.events[1].args.liquidityPool
-        const [, ethValue, tokenValue] = txResponse.events[1].args
+        const eventsNum = txResponse.events.length - 1
+        const [, ethValue, tokenValue] = txResponse.events[eventsNum].args
         const ethWithdrawn = ethers.utils.formatUnits(ethValue, 18)
         const tokenWithdrawn = ethers.utils.formatUnits(tokenValue, 18)
         dispacth({

@@ -1,4 +1,6 @@
+import React from "react"
 import { useState } from "react"
+
 import Link from "next/link"
 import { ConnectButton } from "web3uikit"
 import styles from "../styles/Navbar.module.css"
@@ -61,7 +63,7 @@ const Navbar = () => {
                     </li>
 
                     <li
-                        className="mb-0 mt-0 mx-0 sm:my-auto sm:mx-5"
+                        className="mb-0 mt-0 mx-0 sm:my-auto sm:mx-2"
                         title="ConnectButton"
                     >
                         <ConnectButton moralisAuth={false} />

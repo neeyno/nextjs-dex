@@ -95,7 +95,8 @@ export default function Home() {
     async function handleSwapSuccess(tx) {
         const txResponse = await tx.wait(1)
         console.log(txResponse)
-        const [, input, output, asset] = txResponse.events[2].args
+        const eventsNum = txResponse.events.length - 1
+        const [, input, output, asset] = txResponse.events[eventsNum].args
         const valueSold = ethers.utils.formatUnits(input, 18)
         const valueBought = ethers.utils.formatUnits(output, 18)
         dispacth({
