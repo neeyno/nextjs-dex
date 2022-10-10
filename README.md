@@ -1,7 +1,22 @@
-header
-1. show converter
-2. show pools
-3. show history
+<div align="center">
+ <h2 align="center">Dex</h2>
+  <p align="center">
+    Simple decentralized exchange app
+    <br />
+    <a href="https://github.com/neeyno/hardhat-dex" target="_blank" >
+      <strong>| Explore Smart Contract </strong>
+    </a>
+    <a  href="https://github.com/neeyno/nextjs-dex" target="_blank">
+    <strong>| Explore Frontend |</strong>
+    </a>
+    <br />
+    <a  href="https://jolly-shape-2407.on.fleek.co/" target="_blank"><strong>| View DEMO |</strong></a>
+ </p>
+</div>
+<hr>
+
+### Description
+This repository contains frontend part of Decentralized exchange app.
 
 
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).

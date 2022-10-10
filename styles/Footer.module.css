@@ -1,0 +1,9 @@
+.footer {
+    visibility:hidden
+}
+
+@media (min-height: 520px) {
+    .footer { 
+        visibility:visible;
+    }
+}

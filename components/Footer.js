@@ -5,6 +5,7 @@ import Link from "next/link"
 import contractAddresses from "../lib/contractAddresses.json"
 
 import { ImInfo } from "react-icons/im"
+import styles from "../styles/Footer.module.css"
 
 export default function Footer() {
     const [showInfo, setShowInfo] = useState(false)
@@ -28,9 +29,9 @@ export default function Footer() {
     }, [isWeb3Enabled, chainId])
 
     return (
-        <div className="absolute bottom-0 w-screen">
+        <footer className={`fixed h-9 bottom-0 w-screen ${styles.footer}`}>
             {showInfo && (
-                <div className=" z-10 absolute bottom-16 bg-gray-900 rounded-xl mx-2">
+                <div className="absolute bottom-12 bg-gray-900 rounded-xl mx-2">
                     <div className="text-xs text-gray-100 p-2 sm:text-base">
                         <p>Goerli testnet only!</p>
                         <p>{`Token address: ${tokenAddress}`}</p>
@@ -92,7 +93,7 @@ export default function Footer() {
                     </div>
                 </div>
             </div>
-            <div className="py-2 pt-0 px-2">
+            {/* <div className="py-2 pt-0 px-2">
                 <h5 className="text-gray-400 text-xs text-center leading-6">
                     {"Made with "}
                     <a
@@ -114,7 +115,7 @@ export default function Footer() {
                     </a>
                     {"."}
                 </h5>
-            </div>
-        </div>
+            </div> */}
+        </footer>
     )
 }
