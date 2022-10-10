@@ -1,7 +1,7 @@
 <div align="center">
  <h2 align="center">Dex</h2>
   <p align="center">
-    Simple decentralized exchange app
+    Basic decentralized exchange app
     <br />
     <a href="https://github.com/neeyno/hardhat-dex" target="_blank" >
       <strong>| Explore Smart Contract </strong>
