@@ -21,7 +21,6 @@ export default function Footer() {
             : null
 
     useEffect(() => {
-        console.log(chainId)
         if (isWeb3Enabled && chainId != "5") {
             alert("Goerli testnet only!")
         }
@@ -30,7 +29,7 @@ export default function Footer() {
 
     return (
         <div className="absolute bottom-0 w-screen">
-            {showInfo ? (
+            {showInfo && (
                 <div className=" z-10 absolute bottom-16 bg-gray-900 rounded-xl mx-2">
                     <div className="text-xs text-gray-100 p-2 sm:text-base">
                         <p>Goerli testnet only!</p>
@@ -46,7 +45,7 @@ export default function Footer() {
                         </div>
                     </div>
                 </div>
-            ) : null}
+            )}
             <div className="py-1 px-4 border-t border-t-gray-700 flex justify-between items-center max-w-6xl m-auto flex-row">
                 <ul className="flex justify-center items-center gap-4">
                     <li className="text-gray-400 text-sm" title="Swap">
