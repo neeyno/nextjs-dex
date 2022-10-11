@@ -26,7 +26,7 @@ export default function Pool({
                         onClick={() => setDepositModal(!depositModal)}
                     >
                         <span className="text-lg font-semibold sm:text-xl">
-                            {depositModal ? "Cancel deposition" : "Deposit"}
+                            {depositModal ? "Cancel deposit" : "Deposit"}
                         </span>
                     </button>
                 </div>
@@ -67,11 +67,11 @@ export default function Pool({
                         </button> */}
                             </div>
 
-                            <div className="my-auto  mx-auto">
+                            <div className="flex my-auto  mx-auto">
                                 <div className="slider relative"></div>
                                 <div className="range-input ">
                                     <input
-                                        className="w-9/12 sm:w-10/12"
+                                        className="w-10/12"
                                         type="range"
                                         min="0"
                                         step="25"

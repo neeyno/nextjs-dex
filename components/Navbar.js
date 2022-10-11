@@ -49,7 +49,7 @@ const Navbar = () => {
                     </li>
 
                     <li
-                        className="mb-5 mt-2 mx-0 sm:my-auto sm:mx-5"
+                        className="mb-5 mt-0 mx-0 sm:my-auto sm:mx-5"
                         title="Pool"
                     >
                         <Link href="/pool">
@@ -76,9 +76,9 @@ const Navbar = () => {
                 } ${menuOpen ? `${styles.open}` : ""}`}
                 onClick={() => SetMenuOpen(!menuOpen)}
             >
-                <span className="h-0.5 w-7 mb-1.5 bg-white"></span>
-                <span className="h-0.5 w-7 mb-1.5 bg-white"></span>
-                <span className="h-0.5 w-7 mb-1.5 bg-white"></span>
+                <span className="h-0.5 w-7 mb-1.5 bg-gray-100"></span>
+                <span className="h-0.5 w-7 mb-1.5 bg-gray-100"></span>
+                <span className="h-0.5 w-7 mb-1.5 bg-gray-100"></span>
             </div>
         </header>
     )

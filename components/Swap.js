@@ -20,7 +20,7 @@ export default function Swap({
 
     return (
         <div className="w-screen flex items-center justify-center mt-16 px-1">
-            <div className="z-10 bg-gray-900 text-gray-100 w-[40rem] rounded-2xl p-2 sm:w-[40rem] sm:p-4">
+            <div className="bg-gray-900 text-gray-100 w-[40rem] rounded-2xl p-2 sm:w-[40rem] sm:p-4">
                 <div className="px-2 flex items-center justify-between font-semibold text-xl ">
                     <div>Swap</div>
                 </div>
