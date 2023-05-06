@@ -15,6 +15,10 @@
 </div>
 <hr>
 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/070dbb3e-eceb-4198-bc72-66bfad4b81b9/deploy-status)](https://app.netlify.com/sites/heroic-fenglisu-ed76b2/deploys)
+
+
+
 ### Description
 This repository contains frontend part of Decentralized exchange app.
 
